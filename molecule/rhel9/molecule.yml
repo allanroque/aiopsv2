@@ -44,7 +44,7 @@ verifier:
 
 # Scenario configuration
 scenario:
-  name: rhel
+  name: rhel9
   test_sequence:
     - dependency
     - cleanup

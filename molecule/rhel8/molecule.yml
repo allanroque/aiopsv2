@@ -1,5 +1,5 @@
 ---
-# Dependency management (download roles/collections)
+# ===== Dependency management (roles/collections via Galaxy) =====
 dependency:
   name: galaxy
   options:
@@ -8,19 +8,20 @@ dependency:
     role-file: requirements.yml
     requirements-file: requirements.yml
 
-# Driver configuration
+# ===== Driver: Podman com systemd =====
 driver:
   name: podman
 
-# Platform configuration - RHEL container
+# ===== Plataforma do container RHEL-like com systemd =====
 platforms:
-  - name: instance
+  - name: instance                  # nome do container (será o ansible_host também)
     image: quay.io/ansible/molecule-rhel:latest
-    privileged: true
+    privileged: true                # necessário p/ systemd
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
     command: /sbin/init
     pre_build_image: true
+
 
 # Provisioner configuration
 provisioner:
@@ -31,6 +32,7 @@ provisioner:
         ansible_connection: local
   playbooks:
     create: create.yml
+    prepare: prepare.yml
     converge: converge.yml
     destroy: destroy.yml
     cleanup: cleanup.yml
@@ -38,13 +40,30 @@ provisioner:
     side_effect: side_effect.yml
     verify: verify.yml
 
+  config_options:
+    defaults:
+      # saída legível e habilitar callbacks no stdout
+      stdout_callback: yaml
+      bin_ansible_callbacks: true
+      # habilita os callbacks desejados
+      callbacks_enabled: ansible.posix.timer, ansible.posix.profile_tasks, ansible.posix.profile_roles, mhansen.ansible_trace.trace
+      # onde o Ansible encontrará os callbacks (incluindo o ansible-trace)
+      callback_plugins: ${MOLECULE_SCENARIO_DIRECTORY}/callback_plugins
+
+  # Variáveis de ambiente para o ansible-trace
+  env:
+    # grava o .json de trace DENTRO do cenário rhel8
+    TRACE_OUTPUT_DIR: ${MOLECULE_SCENARIO_DIRECTORY}/trace
+    # opcional: esconder argumentos de tasks no trace
+    TRACE_HIDE_TASK_ARGUMENTS: "True"
+
 # Verifier configuration
 verifier:
   name: ansible
 
 # Scenario configuration
 scenario:
-  name: rhel
+  name: rhel8
   test_sequence:
     - dependency
     - cleanup

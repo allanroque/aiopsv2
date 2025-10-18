@@ -1,0 +1,7 @@
+# Agrupamento dinâmico (constructed) com base em variáveis do host
+plugin: ansible.builtin.constructed
+strict: false
+groups:
+  molecule: environment is defined and environment == 'molecule'
+  rhel8: ansible_facts['os_family'] | default('') == 'RedHat'
+

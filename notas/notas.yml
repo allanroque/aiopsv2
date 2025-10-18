@@ -1,0 +1,15 @@
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Apache está instalado
+      ansible.builtin.command: rpm -q httpd
+      register: rpmq
+      changed_when: false
+      failed_when: rpmq.rc not in [0]
+
+    - name: Porta 80 escutando
+      ansible.builtin.shell: "ss -ltn 'sport = :80' | grep LISTEN"
+      register: ss80
+      changed_when: false
+      failed_when: ss80.rc != 0

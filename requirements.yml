@@ -2,3 +2,4 @@
 collections:
   - name: containers.podman
     version: ">=1.10.0"
+  - name: mhansen.ansible_trace.trace

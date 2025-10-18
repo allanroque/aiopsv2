@@ -1,0 +1,13 @@
+# Inventário estático básico com o host criado pelo Molecule
+all:
+  hosts:
+    instance:
+      # conexão nativa com o container do Podman (sem SSH)
+      ansible_connection: containers.podman.podman
+      # o nome do container é o mesmo definido em platforms[0].name
+      ansible_host: instance
+      ansible_user: root
+      ansible_python_interpreter: /usr/bin/python3
+      # etiqueta para o constructed.yml agrupar como 'molecule'
+      environment: molecule
+
