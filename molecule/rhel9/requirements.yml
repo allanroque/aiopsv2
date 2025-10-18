@@ -1,0 +1,8 @@
+---
+# Molecule requirements file
+# This file is used to install dependencies for the role
+collections:
+  - name: ansible.posix
+    version: ">=1.0.0"
+  - name: community.general
+    version: ">=1.0.0"

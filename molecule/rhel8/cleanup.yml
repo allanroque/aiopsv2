@@ -1,0 +1,24 @@
+---
+# Purpose: cleanup the instance(s) after testing
+# Molecule calls this playbook with `molecule cleanup`.
+- name: Cleanup
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Stop Apache service
+      ansible.builtin.service:
+        name: httpd
+        state: stopped
+      ignore_errors: true
+
+    - name: Remove Apache packages
+      ansible.builtin.package:
+        name: httpd
+        state: absent
+      ignore_errors: true
+
+    - name: Clean up temporary files
+      ansible.builtin.file:
+        path: /tmp/molecule
+        state: absent
+      ignore_errors: true

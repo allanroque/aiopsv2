@@ -1,0 +1,40 @@
+---
+# Purpose: assert that the instance really ended up in the expected state.
+# Molecule calls this playbook with `molecule verify`.
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Check if Apache is installed
+      ansible.builtin.package:
+        name: httpd
+        state: present
+      check_mode: true
+      register: apache_install
+      failed_when: (apache_install is changed) or (apache_install is failed)
+
+    - name: Check if Apache service is running
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+      check_mode: true
+      register: apache_service
+      failed_when: (apache_service is changed) or (apache_service is failed)
+
+    - name: Verify Apache configuration file exists
+      ansible.builtin.stat:
+        path: /etc/httpd/conf/httpd.conf
+      register: apache_conf
+      failed_when: not apache_conf.stat.exists
+
+    - name: Verify Apache is responding
+      ansible.builtin.uri:
+        url: http://localhost
+        status_code: 200
+      register: apache_response
+      failed_when: apache_response.status != 200
+
+    - name: Report verification results
+      ansible.builtin.debug:
+        msg: "Apache verification completed successfully"

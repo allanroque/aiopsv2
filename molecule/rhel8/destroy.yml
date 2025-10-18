@@ -1,0 +1,22 @@
+---
+# Purpose: destroy the instance(s) created by the create playbook
+# Molecule calls this playbook with `molecule destroy`.
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Destroy molecule instance(s)
+      molecule_podman:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{{ molecule_yml.platforms }}"
+      register: molecule_instance
+
+    - name: Wait for instance(s) deletion to complete
+      async_status:
+        jid: "{{ item.ansible_job_id }}"
+      loop: "{{ molecule_instance.results }}"
+      register: molecule_instance_result
+      until: molecule_instance_result.finished
+      retries: 300

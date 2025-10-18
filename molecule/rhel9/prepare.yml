@@ -1,0 +1,19 @@
+---
+# Purpose: prepare the instance(s) for testing
+# Molecule calls this playbook with `molecule prepare`.
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - python3
+          - systemd
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Wait for systemd to be ready
+      ansible.builtin.wait_for:
+        port: 22
+        timeout: 300

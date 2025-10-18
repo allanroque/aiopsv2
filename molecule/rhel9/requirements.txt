@@ -1,0 +1,3 @@
+# Python requirements for Molecule testing
+molecule-podman>=2.0.0
+ansible>=2.9

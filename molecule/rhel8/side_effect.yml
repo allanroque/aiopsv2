@@ -1,0 +1,10 @@
+---
+# Purpose: perform side effects to the instance(s)
+# Molecule calls this playbook with `molecule side_effect`.
+- name: Side Effect
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Simulate side effects
+      ansible.builtin.debug:
+        msg: "Side effects completed"
